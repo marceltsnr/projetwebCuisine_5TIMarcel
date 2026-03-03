@@ -1,10 +1,11 @@
-<?php 
+<?php
 require_once("Models/userModel.php");
 
 // Récupération du chemin désiré
 $uri = $_SERVER["REQUEST_URI"];
 
-if ($uri === "/connexion") {   if (isset($_POST['btnEnvoi'])) {
+if ($uri === "/connexion") {
+   if (isset($_POST['btnEnvoi'])) {
       if (connectUser($pdo)) {
          // Redirection vers la page d'accueil
          header("location:/");
@@ -40,13 +41,17 @@ if ($uri === "/connexion") {   if (isset($_POST['btnEnvoi'])) {
          exit();
       }
    }
+   if (isset($_POST['btnDelete']) && isset($_SESSION['user'])) {
+      deleteUser($pdo);
+      header("location:/confirmDeleteUser");
+      exit();
+   }
    $title = "Mon profil";
    $template = "Views/Users/InscriptionOrEditProfile.php";
    require_once("Views/base.php");
-} elseif ($uri === "/supprimerProfil") {
-   deleteTagsRecetteFromUser($pdo);
-   deleteAllRecettesFromUser($pdo);
-   deleteUser($pdo);
-   header("location:/deconnexion");
-   exit();
+}
+elseif ($uri === "/confirmDeleteUser") {
+    $title = "Page d'accueil";
+    $template = "Views/Users/confirmDeleteUser.php";
+    require_once("Views/base.php");
 }

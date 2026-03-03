@@ -1,5 +1,11 @@
 <?php 
 function connectUser($pdo) {
+    // Vérifie si les champs login et mot de passe ne sont pas vides
+    $errors = verifEmptyData();
+    if ($errors) {
+        return $errors; // retourne les erreurs si un champ est vide
+    }
+
     try {
         $query = 'select * FROM utilisateur where loginUser = :loginUser and passWordUser = :passWordUser';
         $connectUser = $pdo->prepare($query);
@@ -18,9 +24,16 @@ function connectUser($pdo) {
     } catch (PDOException $e) {
         $message = $e->getMessage();
         die($message);
-}}
+    }
+}
 
 function createUser($pdo) {
+    // Vérifie que tous les champs sont remplis
+    $errors = verifEmptyData();
+    if ($errors) {
+        return $errors; // retourne les erreurs si un champ est vide
+    }
+
     try {
         $query = 'INSERT INTO utilisateur (nomUser, prenomUser, loginUser, passWordUser, emailUser, role) 
                   VALUES (:nomUser, :prenomUser, :loginUser, :passWordUser, :emailUser, :role)';
@@ -42,13 +55,13 @@ function createUser($pdo) {
     }
 }
 
-
 function verifEmptyData() {
     foreach($_POST as $key => $value) {
         if ($key != 'btnEnvoi') {
-        if (empty(str_replace(' ', '', $value))) {
-            $messageError[$key] = "Votre " . $key . " est vide";
-        } }
+            if (empty(str_replace(' ', '', $value))) {
+                $messageError[$key] = "Votre " . $key . " est vide";
+            }
+        }
     }
     if (isset($messageError)) {
         return $messageError;
@@ -89,14 +102,27 @@ function updateSession($pdo) {
 }
 function DeleteUser($pdo) {
     try {
-        $query = 'delete from utilisateurs where id = :id';
-        $delUser = $pdo->prepare($query);
-    $delUser->execute([
-        'id' => $_SESSION["user"]->id
-    ]);
-    }
-    catch (PDOException $e) {
-        $message = $e->getMessage();
-        die($message);
+        $id = $_SESSION["user"]->id;
+
+        $queryTags = 'DELETE tag_recette 
+                      FROM tag_recette
+                      INNER JOIN recette ON tag_recette.recetteId = recette.recetteId
+                      WHERE recette.utilisateurId = :id';
+        $delTags = $pdo->prepare($queryTags);
+        $delTags->execute(['id' => $id]);
+
+        $queryRecettes = 'DELETE FROM recette WHERE utilisateurId = :id';
+        $delRecettes = $pdo->prepare($queryRecettes);
+        $delRecettes->execute(['id' => $id]);
+
+        $queryUser = 'DELETE FROM utilisateur WHERE id = :id';
+        $delUser = $pdo->prepare($queryUser);
+        $delUser->execute(['id' => $id]);
+
+        session_unset();
+        session_destroy();
+
+    } catch (PDOException $e) {
+        die("Erreur SQL : " . $e->getMessage());
     }  
 }
