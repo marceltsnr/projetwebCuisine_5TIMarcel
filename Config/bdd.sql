@@ -55,12 +55,12 @@ CREATE TABLE recette (
   recetteTempsPreparation INT NOT NULL,
   recetteDifficulte VARCHAR(25) NOT NULL,
   recetteImage VARCHAR(255),
-  utilisateurId INT,
+  utilisateurId INT
   categorieId INT,
   PRIMARY KEY (recetteId),
   FOREIGN KEY (utilisateurId) REFERENCES utilisateur(id),
   FOREIGN KEY (categorieId) REFERENCES categorie(categorieId)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+);
 
 -- ... (tables utilisateur, categorie, tag inchangées)
 

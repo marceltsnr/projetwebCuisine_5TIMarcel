@@ -3,52 +3,90 @@ require_once "Models/recetteModel.php";
 
 $uri = $_SERVER["REQUEST_URI"];
 
-if($uri === "/mesRecettes"){
+// -------------------
+// Route : Mes recettes
+// -------------------
+if ($uri === "/mesRecettes") {
     $recettes = selectMyRecettes($pdo);
 
-    $title = "Mes Recettes";                                   // titre à afficher dans l'onglet
-    $template = "Views/pageAccueil.php";                       // chemin vers la vue demandée
-    require_once "Views/base.php";                             // appel de la page de base
+    // Debug temporaire pour vérifier
+    // var_dump($recettes);
+
+    $title = "Mes Recettes";                       
+    $template = "Views/pageAccueil.php";           
+    require_once "Views/base.php";                 
 } 
+
+// -------------------
+// Route : Créer une recette
+// -------------------
 elseif ($uri === "/creerRecette") {
-    
-} 
-elseif (isset($_GET["recetteId"]) && $uri === "/voirRecette?recetteId=" . $_GET["recetteId"]) {
+    $messageSuccess = null;
+
+    if (isset($_POST["btnEnvoi"])) {
+        $recetteId = insertRecette($pdo);
+        $messageSuccess = "Recette créée avec succès !";
+    }
+
+    $categories = selectAllCategories($pdo);
+    $tags = selectAllTags($pdo);
+
+    $title = "Créer une recette";
+    $template = "Views/Recettes/editerOuCreerRecette.php";
+    require_once "Views/base.php";
+}
+
+// -------------------
+// Route : Voir une recette
+// -------------------
+elseif (isset($_GET["recetteId"]) && strpos($uri, "/voirRecette") === 0) {
     $recette = selectOneRecette($pdo);
     $tags = selectTagsActiveRecette($pdo);
-    $title = "Détails de la recette";                         // titre à afficher dans l'onglet
-    $template = "Views/Recettes/voirRecette.php";             // chemin vers la vue demandée
-    require_once "Views/base.php";                            // appel de la page de base
+
+    $title = "Détails de la recette";
+    $template = "Views/Recettes/voirRecette.php";
+    require_once "Views/base.php";
 }
 
-elseif (isset($_GET["recetteId"]) && $uri === "/modifierRecette?recetteId=" . $_GET["recetteId"]) {
+// -------------------
+// Route : Modifier une recette
+// -------------------
+elseif (isset($_GET["recetteId"]) && strpos($uri, "/modifierRecette") === 0) {
+    $messageSuccess = null;
+
     if (isset($_POST['btnEnvoi'])) {
-        updateRecette($pdo); // mettre à jour la table recette
-        deleteTagsRecette($pdo, $_GET["recetteId"]);
-        for ($i = 0; $i < count($_POST["tags"]); $i++) {
-            $tagId = $_POST["tags"][$i];
-            ajouterTagsRecette($pdo, $_GET["recetteId"], $tagId);
+        updateRecette($pdo, (int)$_GET["recetteId"]);
+        deleteTagsRecette($pdo, (int)$_GET["recetteId"]);
+
+        foreach ($_POST["tags"] ?? [] as $tagId) {
+            ajouterTagsRecette($pdo, (int)$_GET["recetteId"], (int)$tagId);
         }
-        header("location: /mesRecettes");
+
+        $messageSuccess = "Recette modifiée avec succès !";
     }
-    $recette = selectOneRecette($pdo);
-    $tagsActiveRecette = selectTagsActiveRecette($pdo);
+
+    $recette = selectOneRecette($pdo, (int)$_GET["recetteId"]);
+    $tagsActiveRecette = selectTagsActiveRecette($pdo, (int)$_GET["recetteId"]);
     $tags = selectAllTags($pdo);
-    $title = "Modifier une recette";                          // titre à afficher dans l'onglet
-    $template = "Views/Recettes/editerOuCreerRecette.php";    // chemin vers la vue demandée
-    require_once "Views/base.php";                            // appel de la page de base
+
+    $title = "Modifier une recette";
+    $template = "Views/Recettes/editerOuCreerRecette.php";
+    require_once "Views/base.php";
 }
 
-elseif (isset($_GET["recetteId"]) && $uri === "/supprimerRecette?recetteId=" . $_GET["recetteId"]) {
-    $recette = selectOneRecette($pdo);
-    
+// -------------------
+// Route : Supprimer une recette
+// -------------------
+elseif (isset($_GET["recetteId"]) && strpos($uri, "/supprimerRecette") === 0) {
+    $recette = selectOneRecette($pdo, (int)$_GET["recetteId"]);
+    $messageSuccess = null;
+
     if (isset($_POST['confirmerSuppression'])) {
-        deleteTagsRecette($pdo, $_GET["recetteId"]);
-        deleteOneRecette($pdo);
-        header("location: /mesRecettes");
-        exit();
+        deleteTagsRecette($pdo, (int)$_GET["recetteId"]);
+        deleteOneRecette($pdo, (int)$_GET["recetteId"]);
+        $messageSuccess = "Recette supprimée avec succès !";
     }
-    
+
     $title = "Supprimer une recette";
     $template = "Views/Recettes/supprimerRecette.php";
     require_once "Views/base.php";

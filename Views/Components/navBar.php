@@ -5,6 +5,7 @@
     
     <?php if (isset($_SESSION['user'])) : ?>
         <li class="menu"><a href="mesRecettes">Mes recettes</a></li>
+        <li class="menu"><a href="creerRecette">Créer une recette</a></li>
         <li class="menu"><a href="profil">Mon profil</a></li>
         <li class="menu"><a href="deconnexion">Déconnexion</a></li>
     <?php else : ?>
