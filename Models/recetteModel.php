@@ -5,12 +5,16 @@
 // -----------------------------
 function selectAllRecettes($pdo) {
     try {
-        $query = 'SELECT * FROM recette';
+        $query = 'SELECT recette.*, categorie.nom AS recetteCategorie, utilisateur.estSuspendu 
+                  FROM recette
+                  INNER JOIN utilisateur ON recette.utilisateurId = utilisateur.id
+                  INNER JOIN categorie ON recette.categorieId = categorie.categorieId
+                  WHERE utilisateur.estSuspendu = 0';
 
         $selectRecette = $pdo->prepare($query);
         $selectRecette->execute();
 
-        $recettes = $selectRecette->fetchAll();
+        $recettes = $selectRecette->fetchAll(PDO::FETCH_OBJ);
 
         return $recettes;
 
@@ -19,7 +23,6 @@ function selectAllRecettes($pdo) {
         die($message);
     }
 }
-
 
 // -----------------------------
 // Supprimer les tags des recettes d'un utilisateur

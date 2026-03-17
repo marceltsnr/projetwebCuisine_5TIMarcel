@@ -1,15 +1,22 @@
 <?php
 require_once("Models/userModel.php");
+require_once("Models/userModel.php");
 
 // Récupération du chemin désiré
 $uri = $_SERVER["REQUEST_URI"];
 
 if ($uri === "/connexion") {
    if (isset($_POST['btnEnvoi'])) {
-      if (connectUser($pdo)) {
+      $result = connectUser($pdo);
+      
+      if ($result === true) {
          // Redirection vers la page d'accueil
          header("location:/");
          exit();
+      } elseif ($result === "suspendu") {
+         $error = "Votre compte a été suspendu. Veuillez contacter l'administrateur.";
+      } else {
+         $error = "Identifiants incorrects";
       }
    }
    $title = "Connexion";
@@ -53,5 +60,10 @@ if ($uri === "/connexion") {
 elseif ($uri === "/confirmDeleteUser") {
     $title = "Page d'accueil";
     $template = "Views/Users/confirmDeleteUser.php";
+    require_once("Views/base.php");
+}
+elseif ($uri === "/ban") {
+    $title = "Compte suspendu";
+    $template = "Views/Users/ban.php";
     require_once("Views/base.php");
 }

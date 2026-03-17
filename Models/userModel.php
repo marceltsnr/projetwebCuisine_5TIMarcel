@@ -1,5 +1,9 @@
 <?php 
 
+// ============================================
+// FONCTIONS D'AUTHENTIFICATION ET UTILISATEUR
+// ============================================
+
 // -----------------------------
 // Connexion utilisateur
 // -----------------------------
@@ -28,10 +32,15 @@ function connectUser($pdo) {
 
         if (!$user) {
             return false;
-        } else {
-            $_SESSION["user"] = $user;
-            return true;
         }
+        
+        // Vérifier si le compte est suspendu
+        if ($user->estSuspendu == 1) {
+            return "suspendu";
+        }
+        
+        $_SESSION["user"] = $user;
+        return true;
 
     } catch (PDOException $e) {
         $message = $e->getMessage();
@@ -54,9 +63,9 @@ function createUser($pdo) {
     try {
 
         $query = 'INSERT INTO utilisateur 
-                  (nomUser, prenomUser, loginUser, passWordUser, emailUser, role) 
+                  (nomUser, prenomUser, loginUser, passWordUser, emailUser, role, estSuspendu) 
                   VALUES 
-                  (:nomUser, :prenomUser, :loginUser, :passWordUser, :emailUser, :role)';
+                  (:nomUser, :prenomUser, :loginUser, :passWordUser, :emailUser, :role, 0)';
 
         $createUser = $pdo->prepare($query);
 
@@ -69,40 +78,13 @@ function createUser($pdo) {
             'role' => 'user'
         ]);
 
-        echo "Utilisateur ajouté avec succès";
+        return true;
 
     } catch (PDOException $e) {
 
         $message = $e->getMessage();
         die($message);
 
-    }
-}
-
-
-// -----------------------------
-// Vérification des champs vides
-// -----------------------------
-function verifEmptyData() {
-
-    foreach($_POST as $key => $value) {
-
-        if ($key != 'btnEnvoi') {
-
-            if (str_replace(' ', '', $value) == '') {
-
-                $messageError[$key] = "Votre " . $key . " est vide";
-
-            }
-
-        }
-
-    }
-
-    if (isset($messageError)) {
-        return $messageError;
-    } else {
-        return false;
     }
 }
 
@@ -223,4 +205,245 @@ function deleteUser($pdo) {
 
     }
 
+}
+
+
+// ============================================
+// FONCTIONS D'ADMINISTRATION (GESTION DES COMPTES)
+// ============================================
+
+// -----------------------------
+// Récupérer tous les utilisateurs
+// -----------------------------
+function getAllUtilisateurs($pdo) {
+
+    try {
+
+        $query = 'SELECT id, nomUser, prenomUser, loginUser, role, emailUser, estSuspendu
+                  FROM utilisateur 
+                  ORDER BY id';
+
+        $getAllUtilisateurs = $pdo->prepare($query);
+        $getAllUtilisateurs->execute();
+
+        $utilisateurs = $getAllUtilisateurs->fetchAll(PDO::FETCH_OBJ);
+
+        return $utilisateurs;
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// -----------------------------
+// Suspendre un utilisateur
+// -----------------------------
+function suspendreUtilisateur($pdo, $id) {
+
+    try {
+
+        $query = 'UPDATE utilisateur 
+                  SET estSuspendu = 1 
+                  WHERE id = :id';
+
+        $suspendreUser = $pdo->prepare($query);
+
+        $suspendreUser->execute([
+            'id' => $id
+        ]);
+
+        return true;
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// -----------------------------
+// Réactiver un utilisateur
+// -----------------------------
+function reactiverUtilisateur($pdo, $id) {
+
+    try {
+
+        $query = 'UPDATE utilisateur 
+                  SET estSuspendu = 0 
+                  WHERE id = :id';
+
+        $reactiverUser = $pdo->prepare($query);
+
+        $reactiverUser->execute([
+            'id' => $id
+        ]);
+
+        return true;
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// -----------------------------
+// Récupérer le statut de suspension
+// -----------------------------
+function getStatutSuspension($pdo, $id) {
+
+    try {
+
+        $query = 'SELECT estSuspendu FROM utilisateur WHERE id = :id';
+
+        $getStatut = $pdo->prepare($query);
+
+        $getStatut->execute([
+            'id' => $id
+        ]);
+
+        $user = $getStatut->fetch(PDO::FETCH_OBJ);
+
+        if ($user) {
+            return $user->estSuspendu;
+        } else {
+            return null;
+        }
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// -----------------------------
+// Vérifier si l'utilisateur est admin
+// -----------------------------
+function verifAdmin($pdo, $userId) {
+
+    try {
+
+        $query = 'SELECT role FROM utilisateur WHERE id = :id';
+
+        $verifAdmin = $pdo->prepare($query);
+
+        $verifAdmin->execute([
+            'id' => $userId
+        ]);
+
+        $user = $verifAdmin->fetch(PDO::FETCH_OBJ);
+
+        if ($user && $user->role === 'admin') {
+            return true;
+        } else {
+            return false;
+        }
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// -----------------------------
+// Compter les recettes d'un utilisateur
+// -----------------------------
+function countRecettesByUser($pdo, $userId) {
+
+    try {
+
+        $query = 'SELECT COUNT(*) as total 
+                  FROM recette 
+                  WHERE utilisateurId = :userId';
+
+        $countRecettes = $pdo->prepare($query);
+
+        $countRecettes->execute([
+            'userId' => $userId
+        ]);
+
+        $result = $countRecettes->fetch(PDO::FETCH_OBJ);
+
+        return $result->total;
+
+    } catch (PDOException $e) {
+
+        $message = $e->getMessage();
+        die($message);
+
+    }
+
+}
+
+
+// ============================================
+// FONCTIONS UTILITAIRES
+// ============================================
+
+// -----------------------------
+// Vérification des champs vides
+// -----------------------------
+function verifEmptyData() {
+
+    foreach($_POST as $key => $value) {
+
+        if ($key != 'btnEnvoi') {
+
+            if (str_replace(' ', '', $value) == '') {
+
+                $messageError[$key] = "Votre " . $key . " est vide";
+
+            }
+
+        }
+
+    }
+
+    if (isset($messageError)) {
+        return $messageError;
+    } else {
+        return false;
+    }
+
+}
+
+function promouvoirModerateur($pdo, $id) {
+    try {
+        $query = 'UPDATE utilisateur SET role = :role WHERE id = :id';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(['role' => 'moderateur', 'id' => $id]);
+        return true;
+    } catch (PDOException $e) {
+        die($e->getMessage());
+    }
+}
+
+function retrograderUtilisateur($pdo, $id) {
+    try {
+        $query = 'UPDATE utilisateur SET role = :role WHERE id = :id';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(['role' => 'user', 'id' => $id]);
+        return true;
+    } catch (PDOException $e) {
+        die($e->getMessage());
+    }
 }

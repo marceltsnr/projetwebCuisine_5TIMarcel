@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../Assets/css/animation.css">
     <link rel="stylesheet" href="../Assets/Css/flex.css">
     <link rel="stylesheet" href="../Assets/css/form.css">
-    <link rel="shortcut icon" href="../Assets/Images/icon1.jpg" type="image/x-icon">
+    <link rel="shortcut icon" href="../Assets/Images/logo.png" type="image/x-icon">
     <title><?php $title ?></title>
 </head>
 <body>

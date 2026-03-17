@@ -6,6 +6,7 @@ CREATE TABLE utilisateur (
   passWordUser VARCHAR(25) NOT NULL,
   role VARCHAR(255) DEFAULT 'user',
   emailUser VARCHAR(40),
+  estSuspendu TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 = actif, 1 = suspendu',
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
