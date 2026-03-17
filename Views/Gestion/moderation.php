@@ -4,7 +4,6 @@
         <h1>Modération</h1>
         <div class="user-info">
             <span>Connecté en tant que : <strong><?= $_SESSION["user"]->prenomUser ?> <?= $_SESSION["user"]->nomUser ?></strong> (Modérateur)</span>
-            <a href="/deconnexion" class="btn-deconnexion">Déconnexion</a>
         </div>
     </div>
 
