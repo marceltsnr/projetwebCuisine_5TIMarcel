@@ -60,17 +60,26 @@
                         <td class="actions">
                             <?php if ($user->id != $_SESSION["utilisateur"]->id): ?>
                                 <?php if ($data['estSuspendu']): ?>
-                                    <a href="?action=reactiver&id=<?= $user->id ?>" class="btn-reactiv">Réactiver</a>
+                                    <a href="?action=reactiver&id=<?= $user->id ?>" class="btn-reactiv">
+                                        <img class="btn-img" src="../../Assets/Images/activate.png" alt="Activate">
+                                    </a>
                                 <?php else: ?>
-                                    <a href="?action=suspendre&id=<?= $user->id ?>" class="btn-suspend">Suspendre</a>
+                                    <a href="?action=suspendre&id=<?= $user->id ?>" class="btn-suspend">
+                                        <img class="btn-img" src="../../Assets/Images/banned.png" alt="Banned">
+                                    </a>
                                 <?php endif; ?>
 
                                 <?php if ($user->role === 'moderateur'): ?>
-                                    <a href="?action=retrograder&id=<?= $user->id ?>" class="btn-retrograder">Rétrograder</a>
+                                    <a href="?action=retrograder&id=<?= $user->id ?>" class="btn-retrograder">
+                                        <img class="btn-img" src="../../Assets/Images/down.png" alt="Retrograder">
+                                    </a>
                                 <?php elseif ($user->role === 'user'): ?>
-                                    <a href="?action=promouvoir&id=<?= $user->id ?>" class="btn-promouvoir">Modérateur</a>
-                                <?php endif; ?>
-                                <a href="/admVoirUser?id=<?= $user->id ?>" class="btn-promouvoir">Voir</a>
+                                    <a href="?action=promouvoir&id=<?= $user->id ?>" class="btn-promouvoir">
+                                        <img class="btn-img" src="../../Assets/Images/up.png" alt="Promouvoir">
+                                    </a> <?php endif; ?>
+                                <a href="/admVoirUser?id=<?= $user->id ?>" class="btn-promouvoir">
+                                    <img class="btn-img" src="../../Assets/Images/oeil.png" alt="Voir">
+                                </a>
                             <?php else: ?>
                                 <span class="text-muted">(Vous)</span>
                             <?php endif; ?>
