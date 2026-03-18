@@ -34,7 +34,6 @@ $uri = $_SERVER["REQUEST_URI"];
 | associées à l'utilisateur dans la base de données.
 */
 if ($uri === "/mesRecettes") {
-
     // Récupération des recettes de l'utilisateur
     $recettes = selectMyRecettes($pdo);
 
@@ -49,7 +48,7 @@ if ($uri === "/mesRecettes") {
 
     // Chargement du template principal
     require_once "Views/base.php";
-} 
+}
 
 
 /*
@@ -63,17 +62,16 @@ if ($uri === "/mesRecettes") {
 | 2. Insertion de la recette dans la base de données
 | 3. Chargement des catégories et tags disponibles
 | 4. Affichage du formulaire de création
-*/
-elseif ($uri === "/creerRecette") {
+*/ elseif ($uri === "/creerRecette") {
 
     // Message de confirmation après création
     $messageSuccess = null;
 
     if (isset($_POST["btnEnvoi"])) {
-    $recetteId = insertRecette($pdo);
-    header("Location: /");
-    exit();
-}
+        $recetteId = insertRecette($pdo);
+        header("Location: /");
+        exit();
+    }
 
     // Récupération des catégories disponibles
     $categories = selectAllCategories($pdo);
@@ -105,8 +103,7 @@ elseif ($uri === "/creerRecette") {
 | Les informations récupérées sont :
 | - les données de la recette
 | - les tags associés à la recette
-*/
-elseif (isset($_GET["recetteId"]) && str_starts_with($uri, "/voirrecette")) {
+*/ elseif (isset($_GET["recetteId"]) && str_starts_with($uri, "/voirrecette")) {
 
     $recette = selectOneRecette($pdo);
     $tags = selectTagsActiveRecette($pdo);
@@ -129,8 +126,7 @@ elseif (isset($_GET["recetteId"]) && str_starts_with($uri, "/voirrecette")) {
 | 2. Mise à jour des informations de la recette
 | 3. Suppression des anciens tags
 | 4. Ajout des nouveaux tags sélectionnés
-*/
-elseif (isset($_GET["recetteId"]) && strpos($uri, "/modifierRecette") === 0) {
+*/ elseif (isset($_GET["recetteId"]) && strpos($uri, "/modifierRecette") === 0) {
 
     $messageSuccess = null;
 
@@ -174,8 +170,7 @@ elseif (isset($_GET["recetteId"]) && strpos($uri, "/modifierRecette") === 0) {
 | 2. Si l'utilisateur confirme :
 |    - suppression des tags associés
 |    - suppression de la recette
-*/
-elseif (isset($_GET["recetteId"]) && strpos($uri, "/supprimerRecette") === 0) {
+*/ elseif (isset($_GET["recetteId"]) && strpos($uri, "/supprimerRecette") === 0) {
 
     // Récupération de la recette à supprimer
     $recette = selectOneRecette($pdo, (int)$_GET["recetteId"]);

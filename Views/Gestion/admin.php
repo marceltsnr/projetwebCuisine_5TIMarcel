@@ -70,6 +70,7 @@
                                 <?php elseif ($user->role === 'user'): ?>
                                     <a href="?action=promouvoir&id=<?= $user->id ?>" class="btn-promouvoir">Modérateur</a>
                                 <?php endif; ?>
+                                <a href="/admVoirUser?id=<?= $user->id ?>" class="btn-promouvoir">Voir</a>
                             <?php else: ?>
                                 <span class="text-muted">(Vous)</span>
                             <?php endif; ?>

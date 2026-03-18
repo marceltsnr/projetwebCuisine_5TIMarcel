@@ -345,3 +345,19 @@ function insertRecette($pdo)
         die($message);
     }
 }
+
+
+// -----------------------------
+// Récupérer les recettes d'un utilisateur par son id
+// -----------------------------
+function getRecettesByUserId($pdo, $userId)
+{
+    try {
+        $query = 'SELECT * FROM recette WHERE utilisateurId = :utilisateurId';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(['utilisateurId' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        die($e->getMessage());
+    }
+}

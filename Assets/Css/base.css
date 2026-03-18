@@ -300,3 +300,43 @@ badge-mes-recettes {
     border-radius: 20px;
     margin-bottom: 8px;
 }
+
+.top5 {
+    max-width: 400px;
+    margin: 20px auto;
+    background: #fff8f0;
+    border: 1px solid #f0a500;
+    border-radius: 8px;
+    padding: 15px 20px;
+}
+
+.top5 h2 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #f0a500;
+}
+
+.top5-ligne {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0e0c0;
+}
+
+.top5-ligne:last-child {
+    border-bottom: none;
+}
+
+.top5-rang {
+    font-weight: bold;
+    font-size: 18px;
+    color: #f0a500;
+    width: 20px;
+}
+
+.top5-nb {
+    margin-left: auto;
+    font-size: 13px;
+    color: #888;
+}

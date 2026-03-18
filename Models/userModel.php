@@ -447,3 +447,18 @@ function retrograderUtilisateur($pdo, $id) {
         die($e->getMessage());
     }
 }
+
+// -----------------------------
+// Récupérer un utilisateur par son id
+// -----------------------------
+function getUserById($pdo, $id)
+{
+    try {
+        $query = 'SELECT * FROM utilisateur WHERE id = :id';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        die($e->getMessage());
+    }
+}

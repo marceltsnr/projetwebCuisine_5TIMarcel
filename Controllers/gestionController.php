@@ -235,3 +235,50 @@ elseif ($uri === "/moderation") {
     $template = "Views/Gestion/moderation.php";
     require_once("Views/base.php");
 }
+
+elseif (str_starts_with($uri, "/admVoirUser") && isset($_GET['id'])) {
+
+    // Vérification connexion
+    if (!isset($_SESSION["utilisateur"])) {
+        header("Location: /connexion");
+        exit();
+    }
+
+    // Vérification admin
+    if (!verifAdmin($pdo, $_SESSION["utilisateur"]->id)) {
+        header("Location: /");
+        exit();
+    }
+
+    $message = null;
+    $messageType = null;
+
+    // Suppression d'une recette
+    if (isset($_GET['action']) && $_GET['action'] === 'supprimerRecette' && isset($_GET['recetteId'])) {
+        deleteTagsRecette($pdo, (int)$_GET['recetteId']);
+        deleteOneRecette($pdo);
+        $message = "Recette supprimée avec succès";
+        $messageType = "success";
+    }
+
+    // Bannissement du compte
+    if (isset($_GET['action']) && $_GET['action'] === 'suspendre') {
+        suspendreUtilisateur($pdo, (int)$_GET['id']);
+        $message = "Utilisateur suspendu avec succès";
+        $messageType = "success";
+    }
+
+    // Réactivation du compte
+    if (isset($_GET['action']) && $_GET['action'] === 'reactiver') {
+        reactiverUtilisateur($pdo, (int)$_GET['id']);
+        $message = "Utilisateur réactivé avec succès";
+        $messageType = "success";
+    }
+
+    $userVu = getUserById($pdo, (int)$_GET['id']);
+    $recettes = getRecettesByUserId($pdo, (int)$_GET['id']);
+
+    $title = "Voir l'utilisateur";
+    $template = "Views/Gestion/voirUser.php";
+    require_once("Views/base.php");
+}

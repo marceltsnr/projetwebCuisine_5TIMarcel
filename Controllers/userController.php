@@ -63,3 +63,13 @@ if ($uri === "/connexion") {
    $template = "Views/Users/ban.php";
    require_once("Views/base.php");
 }
+
+elseif (str_starts_with($uri, "/voirUser") && isset($_GET['id'])) {
+
+    $userVu = getUserById($pdo, (int)$_GET['id']);
+    $recettes = getRecettesByUserId($pdo, (int)$_GET['id']);
+
+    $title = "Profil de " . $userVu->prenomUser;
+    $template = "Views/Users/voirUser.php";
+    require_once("Views/base.php");
+}
