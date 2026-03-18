@@ -3,6 +3,13 @@
 <div class="flexible wrap space-around">
     <?php foreach ($recettes as $recette) : ?>
         <div class="border card">
+            <!-- Badge "Vos recettes" -->
+            <?php if (isset($_SESSION["utilisateur"]) && $recette->utilisateurId === $_SESSION["utilisateur"]->id) : ?>
+                <div class="badge-mes-recettes">
+                    🍳 Vos recettes
+                </div>
+            <?php endif; ?>
+
             <h2 class="center"><?= $recette->recetteTitre ?></h2>
             <div class="flexible discImageEcole">
                 <img src="https://picsum.photos/200/300?random=<?= $recette->recetteImage ?>" alt="photo de la recette">

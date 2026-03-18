@@ -289,3 +289,14 @@ footer a:hover {
     text-align: center;
     font-size: 14px;
 }
+
+badge-mes-recettes {
+    display: inline-block;
+    background-color: #f0a500;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}

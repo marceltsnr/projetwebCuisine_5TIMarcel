@@ -197,10 +197,9 @@ function selectTagsActiveRecette($pdo)
 // -----------------------------
 // Modifier une recette
 // -----------------------------
-function updateRecette($pdo)
+function updateRecette($pdo, $recetteId, $data)
 {
     try {
-
         $query = 'UPDATE recette SET 
           recetteTitre = :titre, 
           recetteDescription = :description, 
@@ -211,22 +210,22 @@ function updateRecette($pdo)
           categorieId = :categorieId, 
           recetteImage = :image 
           WHERE recetteId = :recetteId';
+
         $updateRecette = $pdo->prepare($query);
 
         $updateRecette->execute([
-            'titre' => $_POST["titre"],
-            'description' => $_POST["description"],
-            'ingredients' => $_POST["ingredients"],
-            'etapes' => $_POST["etapes"],
-            'temps_preparation' => $_POST["temps_preparation"],
-            'difficulte' => $_POST["difficulte"],
-            'categorieId' => $_POST["categorieId"],
-            'image' => $_POST["image"],
-            'recetteId' => $_GET["recetteId"]
+            'titre'            => $data['titre'],
+            'description'      => $data['description'],
+            'ingredients'      => $data['ingredients'],
+            'etapes'           => $data['etapes'],
+            'temps_preparation'=> $data['temps_preparation'],
+            'difficulte'       => $data['difficulte'],
+            'categorieId'      => $data['categorieId'],
+            'image'            => $data['image'],
+            'recetteId'        => $recetteId
         ]);
     } catch (PDOException $e) {
-        $message = $e->getMessage();
-        die($message);
+        die($e->getMessage());
     }
 }
 
